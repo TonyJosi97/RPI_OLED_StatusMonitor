@@ -18,7 +18,7 @@ WEATHER_CHECK_DELAY_SEC = 3600 # 1 hour delay
 ## Globals
 owm_manager = None
 oled_disp_sh1106 = None
-prev_weather_check_time = None
+prev_weather_check_time = 0.0
 weather_data = None
 
 def get_temp(window = 20, samp_period_ms = 20):
@@ -133,7 +133,7 @@ def update_oled_screen():
                 weather_data = get_weather_data()
             except:
                 pass
-            
+
         try:
             draw.text((10, 40), "TMP: " + weather_data[0] + " CLD: " + weather_data[1], fill="white")
         except:
