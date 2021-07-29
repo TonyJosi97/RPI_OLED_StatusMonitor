@@ -100,9 +100,10 @@ with canvas(device) as draw:
 
 if __name__ == "__main__":
 
+    init_modules()
+
     print(get_temp())
     print(get_cpu_util_percent())
     print(get_date_time())
     print(get_ram_util_percent())
     print(get_weather_data())
-    
