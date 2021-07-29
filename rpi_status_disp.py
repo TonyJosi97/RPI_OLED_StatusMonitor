@@ -16,6 +16,7 @@ AUTH_TOKEN_FILE_PATH = "./owm_api_key.txt"
 
 ## Globals
 owm_manager = None
+oled_disp_sh1106 = None
 
 def get_temp(window = 20, samp_period_ms = 20):
     temp_sum = 0
@@ -78,6 +79,16 @@ def init_modules():
     owm = OWM(str(get_owm_authtoken()))
     owm_manager = owm.weather_manager()
 
+def init_device():
+    global oled_disp_sh1106
+    # rev.1 users set port=0
+    # substitute spi(device=0, port=0) below if using that interface
+    # substitute bitbang_6800(RS=7, E=8, PINS=[25,24,23,27]) below if using that interface
+    serial = i2c(port=1, address=0x3C)
+
+    # substitute ssd1331(...) or sh1106(...) below if using that device
+    oled_disp_sh1106 = sh1106(serial)
+
 def get_weather_data():
     global owm_manager
     observation = owm_manager.weather_at_place('Karukachal,IN')
@@ -85,25 +96,32 @@ def get_weather_data():
     temptr = w.temperature('celsius')
     return [str(temptr.get("temp")), str(w.clouds), str(w.detailed_status)]
 
-# rev.1 users set port=0
-# substitute spi(device=0, port=0) below if using that interface
-# substitute bitbang_6800(RS=7, E=8, PINS=[25,24,23,27]) below if using that interface
-serial = i2c(port=1, address=0x3C)
 
-# substitute ssd1331(...) or sh1106(...) below if using that device
-device = sh1106(serial)
+def update_oled_screen():
 
-with canvas(device) as draw:
-    draw.rectangle(device.bounding_box, outline="white", fill="black")
-    draw.text((30, 40), "Hello World", fill="white")
+    global oled_disp_sh1106
 
+    with canvas(oled_disp_sh1106) as draw:
+        #draw.rectangle(device.bounding_box, outline="white", fill="black")
+        draw.text((10, 10), "TONY'S RPI 4", fill="white")
+        draw.text((10, 20), "CPU TEMP: " + str(get_temp()), fill="white")
 
 if __name__ == "__main__":
 
-    init_modules()
+    try:
+        init_modules()
+        init_device()
+    except Exception as _:
+        print(_)
 
+    while True:
+        update_oled_screen()
+        sleep(1)
+
+    '''
     print(get_temp())
     print(get_cpu_util_percent())
     print(get_date_time())
     print(get_ram_util_percent())
     print(get_weather_data())
+    '''
