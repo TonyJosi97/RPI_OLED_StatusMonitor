@@ -14,13 +14,14 @@ from pyowm.utils import timestamps
 
 AUTH_TOKEN_FILE_PATH = "./owm_api_key.txt"
 WEATHER_CHECK_DELAY_SEC = 3600 # 1 hour delay
-WAIT_FOR_INTERNET_RETRY = 90 # Each retry takes approx 1 sec (1 sec sleep used)
+WAIT_FOR_INTERNET_RETRY = 60 # Each retry takes approx 1 sec (1 sec sleep used)
 
 ## Globals
 owm_manager = None
 oled_disp_sh1106 = None
 prev_weather_check_time = 0.0
 weather_data = None
+got_weather_data = False
 
 def get_temp(window = 20, samp_period_ms = 20):
     temp_sum = 0
@@ -127,7 +128,7 @@ def limit_str_size(data):
 
 def update_oled_screen():
 
-    global oled_disp_sh1106, prev_weather_check_time, weather_data
+    global oled_disp_sh1106, prev_weather_check_time, weather_data, got_weather_data
 
     with canvas(oled_disp_sh1106) as draw:
         #draw.rectangle(device.bounding_box, outline="white", fill="black")
@@ -141,15 +142,16 @@ def update_oled_screen():
         parsed_ram_util = limit_str_size(parsed_ram_util)
         draw.text((5, 25), "CPU:" + parsed_cpu_util + "% RAM:" + parsed_ram_util + "%", fill="white")
 
-        if time.time() - prev_weather_check_time > WEATHER_CHECK_DELAY_SEC:
+        if time.time() - prev_weather_check_time > WEATHER_CHECK_DELAY_SEC or got_weather_data == False:
 
-            nw_conn_retry = 0
+            nw_conn_retry_tmp = 0
             weather_data = ["OWM", "ERR", ":("]
-            while nw_conn_retry < WAIT_FOR_INTERNET_RETRY:
-                nw_conn_retry += 1
+            while nw_conn_retry_tmp < WAIT_FOR_INTERNET_RETRY:
+                nw_conn_retry_tmp += 1
                 try:
                     init_modules()
                     weather_data = get_weather_data()
+                    got_weather_data = True
                 except:
                     time.sleep(1) # retry after 1 sec
                     continue
