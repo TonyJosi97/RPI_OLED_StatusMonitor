@@ -83,7 +83,7 @@ def get_weather_data():
     observation = owm_manager.weather_at_place('Karukachal,IN')
     w = observation.weather
     temptr = w.temperature('celsius')
-    return [str(temptr.get("temp")), str(w.clouds)]
+    return [str(temptr.get("temp")), str(w.clouds), str(w.detailed_status)]
 
 # rev.1 users set port=0
 # substitute spi(device=0, port=0) below if using that interface
