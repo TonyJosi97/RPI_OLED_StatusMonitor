@@ -14,6 +14,7 @@ from pyowm.utils import timestamps
 
 AUTH_TOKEN_FILE_PATH = "./owm_api_key.txt"
 WEATHER_CHECK_DELAY_SEC = 3600 # 1 hour delay
+WAIT_FOR_INTERNET_RETRY = 60 # Each retry takes approx 1 sec (1 sec sleep used)
 
 ## Globals
 owm_manager = None
@@ -74,6 +75,24 @@ def get_owm_authtoken():
         final_authtk = auth_token.strip()
         return final_authtk
     else:
+        return -1
+
+
+def check_network_connection():
+
+    try:
+        cmd_resp = subprocess.check_output(['curl', '-Is', 'http://www.google.com'])
+        cmd_resp = cmd_resp.decode("utf-8") 
+        cmd_resp_list = cmd_resp.split("\r\n")
+        header_n1 = cmd_resp_list[0]
+
+        header_n1 = header_n1.strip()
+        if header_n1 == "HTTP/1.1 200 OK":
+            return 1
+        else:
+            return 0
+
+    except:
         return -1
 
 def init_modules():
@@ -137,6 +156,16 @@ def update_oled_screen():
             pass
 
 if __name__ == "__main__":
+
+    # Wait for internet to be up and running, (wait for max approx. 60 secs)
+    connected_to_nw = False
+    nw_conn_retry = 0
+    while not connected_to_nw or nw_conn_retry > WAIT_FOR_INTERNET_RETRY:
+        if check_network_connection() == 1:
+            connected_to_nw = True
+            break
+        time.sleep(1) # retry after 1 sec
+        nw_conn_retry += 1
 
     try:
         init_modules()
