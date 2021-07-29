@@ -14,7 +14,7 @@ from pyowm.utils import timestamps
 
 AUTH_TOKEN_FILE_PATH = "./owm_api_key.txt"
 WEATHER_CHECK_DELAY_SEC = 3600 # 1 hour delay
-WAIT_FOR_INTERNET_RETRY = 60 # Each retry takes approx 1 sec (1 sec sleep used)
+WAIT_FOR_INTERNET_RETRY = 90 # Each retry takes approx 1 sec (1 sec sleep used)
 
 ## Globals
 owm_manager = None
