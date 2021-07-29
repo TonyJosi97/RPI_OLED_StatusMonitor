@@ -106,6 +106,8 @@ def get_weather_data():
 def limit_str_size(data):
     if len(data) > 5:
         return data[:5]
+    else:
+        return data
 
 def update_oled_screen():
 
