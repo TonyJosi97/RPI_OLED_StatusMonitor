@@ -117,15 +117,15 @@ def update_oled_screen():
 
     with canvas(oled_disp_sh1106) as draw:
         #draw.rectangle(device.bounding_box, outline="white", fill="black")
-        draw.text((10, 10), "TONY'S RPI 4", fill="white")
+        draw.text((5, 5), "TONY'S RPI 4", fill="white")
         parsed_temp = str(get_temp())
         parsed_temp = parsed_temp[:5]
-        draw.text((10, 20), "CPU TEMP: " + parsed_temp, fill="white")
+        draw.text((5, 15), "CPU TEMP: " + parsed_temp + " *C", fill="white")
         parsed_cpu_util = str(get_cpu_util_percent())
         parsed_cpu_util = limit_str_size(parsed_cpu_util)
         parsed_ram_util = str(get_ram_util_percent())
         parsed_ram_util = limit_str_size(parsed_ram_util)
-        draw.text((10, 30), "CPU: " + parsed_cpu_util + "% RAM: " + parsed_ram_util + "%", fill="white")
+        draw.text((5, 25), "CPU:" + parsed_cpu_util + "% RAM:" + parsed_ram_util + "%", fill="white")
 
         if time.time() - prev_weather_check_time > WEATHER_CHECK_DELAY_SEC:
             try:
@@ -135,7 +135,7 @@ def update_oled_screen():
                 pass
 
         try:
-            draw.text((10, 40), "TMP: " + weather_data[0] + " CLD: " + weather_data[1], fill="white")
+            draw.text((5, 35), "TMP: " + weather_data[0] + " CLD: " + weather_data[1], fill="white")
         except:
             pass
 
