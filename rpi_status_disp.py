@@ -142,12 +142,19 @@ def update_oled_screen():
         draw.text((5, 25), "CPU:" + parsed_cpu_util + "% RAM:" + parsed_ram_util + "%", fill="white")
 
         if time.time() - prev_weather_check_time > WEATHER_CHECK_DELAY_SEC:
-            try:
-                init_modules()
-                weather_data = get_weather_data()
-            except Exception as e:
-                print(e)
-                weather_data = ["OWM", "ERR", ":("]
+
+            nw_conn_retry = 0
+            weather_data = ["OWM", "ERR", ":("]
+            while nw_conn_retry < WAIT_FOR_INTERNET_RETRY:
+                nw_conn_retry += 1
+                try:
+                    init_modules()
+                    weather_data = get_weather_data()
+                except:
+                    time.sleep(1) # retry after 1 sec
+                    continue
+                break
+
             prev_weather_check_time = time.time() 
 
         try:
