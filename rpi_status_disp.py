@@ -6,7 +6,7 @@ from luma.core.render import canvas
 from luma.oled.device import sh1106
 import subprocess
 import datetime
-from time import sleep
+import time 
 import psutil
 from pyowm import OWM
 from pyowm.utils import config
@@ -17,6 +17,7 @@ AUTH_TOKEN_FILE_PATH = "./owm_api_key.txt"
 ## Globals
 owm_manager = None
 oled_disp_sh1106 = None
+prev_weather_check_time = None
 
 def get_temp(window = 20, samp_period_ms = 20):
     temp_sum = 0
@@ -28,7 +29,7 @@ def get_temp(window = 20, samp_period_ms = 20):
         t_arr =t_arr.split("'")
         temp = float(t_arr[0])
         temp_sum += temp
-        sleep(samp_period_ms / 1000)
+        time.sleep(samp_period_ms / 1000)
 
     return temp_sum / window
 
@@ -75,9 +76,12 @@ def get_owm_authtoken():
 
 def init_modules():
     
-    global owm_manager
-    owm = OWM(str(get_owm_authtoken()))
-    owm_manager = owm.weather_manager()
+    try:
+        global owm_manager
+        owm = OWM(str(get_owm_authtoken()))
+        owm_manager = owm.weather_manager()
+    except:
+        pass
 
 def init_device():
     global oled_disp_sh1106
@@ -90,12 +94,18 @@ def init_device():
     oled_disp_sh1106 = sh1106(serial)
 
 def get_weather_data():
-    global owm_manager
-    observation = owm_manager.weather_at_place('Karukachal,IN')
-    w = observation.weather
-    temptr = w.temperature('celsius')
-    return [str(temptr.get("temp")), str(w.clouds), str(w.detailed_status)]
+    try:
+        global owm_manager
+        observation = owm_manager.weather_at_place('Karukachal,IN')
+        w = observation.weather
+        temptr = w.temperature('celsius')
+        return [str(temptr.get("temp")), str(w.clouds), str(w.detailed_status)]
+    except:
+        pass
 
+def limit_str_size(data):
+    if len(data) > 5:
+        return data[:5]
 
 def update_oled_screen():
 
@@ -104,7 +114,14 @@ def update_oled_screen():
     with canvas(oled_disp_sh1106) as draw:
         #draw.rectangle(device.bounding_box, outline="white", fill="black")
         draw.text((10, 10), "TONY'S RPI 4", fill="white")
-        draw.text((10, 20), "CPU TEMP: " + str(get_temp()), fill="white")
+        parsed_temp = str(get_temp())
+        parsed_temp = parsed_temp[:5]
+        draw.text((10, 20), "CPU TEMP: " + parsed_temp, fill="white")
+        parsed_cpu_util = str(get_cpu_util_percent())
+        parsed_cpu_util = limit_str_size(parsed_cpu_util)
+        parsed_ram_util = str(get_ram_util_percent())
+        parsed_ram_util = limit_str_size(parsed_ram_util)
+        draw.text((10, 30), "CPU: " + parsed_cpu_util + "%   RAM: " + parsed_ram_util + "%", fill="white")
 
 if __name__ == "__main__":
 
@@ -116,7 +133,7 @@ if __name__ == "__main__":
 
     while True:
         update_oled_screen()
-        sleep(1)
+        time.sleep(1 - 0.4) ## Update every 1 sec, CPU temp calc function takes aprox 400 ms
 
     '''
     print(get_temp())
