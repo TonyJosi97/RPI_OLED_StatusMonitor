@@ -1,2 +1,3 @@
 #!/bin/sh
-python3 /home/pi/Documents/Projects/RPI_OLED_StatusMonitor/rpi_status_disp.py
+cd /home/pi/Documents/Projects/RPI_OLED_StatusMonitor
+python3 rpi_status_disp.py
