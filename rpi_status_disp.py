@@ -4,6 +4,24 @@ from luma.core.interface.serial import i2c
 from luma.core.interface.parallel import bitbang_6800
 from luma.core.render import canvas
 from luma.oled.device import sh1106
+import subprocess
+import datetime
+from time import sleep
+
+def get_temp(window = 20, samp_period_ms = 20):
+    temp_sum = 0
+
+    for _ in range(window):
+        out = subprocess.run(['vcgencmd', 'measure_temp'], stdout=subprocess.PIPE).stdout.decode('utf-8')
+        t_arr = out.split("=")
+        t_arr = t_arr[1]
+        t_arr =t_arr.split("'")
+        temp = float(t_arr[0])
+        temp_sum += temp
+        sleep(samp_period_ms / 1000)
+
+    return temp_sum / window
+
 
 # rev.1 users set port=0
 # substitute spi(device=0, port=0) below if using that interface
