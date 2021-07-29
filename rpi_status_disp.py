@@ -77,13 +77,10 @@ def get_owm_authtoken():
         return -1
 
 def init_modules():
-    
-    try:
-        global owm_manager
-        owm = OWM(str(get_owm_authtoken()))
-        owm_manager = owm.weather_manager()
-    except:
-        pass
+    global owm_manager
+    owm = OWM(str(get_owm_authtoken()))
+    owm_manager = owm.weather_manager()
+
 
 def init_device():
     global oled_disp_sh1106
@@ -96,14 +93,12 @@ def init_device():
     oled_disp_sh1106 = sh1106(serial)
 
 def get_weather_data():
-    try:
-        global owm_manager
-        observation = owm_manager.weather_at_place('Karukachal,IN')
-        w = observation.weather
-        temptr = w.temperature('celsius')
-        return [str(temptr.get("temp")), str(w.clouds), str(w.detailed_status)]
-    except:
-        pass
+    global owm_manager
+    observation = owm_manager.weather_at_place('Karukachal,IN')
+    w = observation.weather
+    temptr = w.temperature('celsius')
+    return [str(temptr.get("temp")), str(w.clouds), str(w.detailed_status)]
+
 
 def limit_str_size(data):
     if len(data) > 5:
@@ -132,15 +127,14 @@ def update_oled_screen():
                 init_modules()
                 weather_data = get_weather_data()
             except:
-                pass
+                weather_data = ["OWM", "ERR", ":("]
+            prev_weather_check_time = time.time() 
 
         try:
             draw.text((5, 35), "TMP: " + weather_data[0] + " CLD: " + weather_data[1], fill="white")
+            draw.text((5, 45), "STS: " + weather_data[2], fill="white")
         except:
             pass
-
-
-
 
 if __name__ == "__main__":
 
@@ -153,11 +147,3 @@ if __name__ == "__main__":
     while True:
         update_oled_screen()
         time.sleep(1 - 0.4) ## Update every 1 sec, CPU temp calc function takes aprox 400 ms
-
-    '''
-    print(get_temp())
-    print(get_cpu_util_percent())
-    print(get_date_time())
-    print(get_ram_util_percent())
-    print(get_weather_data())
-    '''
