@@ -145,7 +145,8 @@ def update_oled_screen():
             try:
                 init_modules()
                 weather_data = get_weather_data()
-            except:
+            except Exception as e:
+                print(e)
                 weather_data = ["OWM", "ERR", ":("]
             prev_weather_check_time = time.time() 
 
@@ -160,7 +161,7 @@ if __name__ == "__main__":
     # Wait for internet to be up and running, (wait for max approx. 60 secs)
     connected_to_nw = False
     nw_conn_retry = 0
-    while not connected_to_nw or nw_conn_retry > WAIT_FOR_INTERNET_RETRY:
+    while not connected_to_nw and nw_conn_retry < WAIT_FOR_INTERNET_RETRY:
         if check_network_connection() == 1:
             connected_to_nw = True
             break
