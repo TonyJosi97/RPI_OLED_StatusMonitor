@@ -13,11 +13,13 @@ from pyowm.utils import config
 from pyowm.utils import timestamps
 
 AUTH_TOKEN_FILE_PATH = "./owm_api_key.txt"
+WEATHER_CHECK_DELAY_SEC = 3600 # 1 hour delay
 
 ## Globals
 owm_manager = None
 oled_disp_sh1106 = None
 prev_weather_check_time = None
+weather_data = None
 
 def get_temp(window = 20, samp_period_ms = 20):
     temp_sum = 0
@@ -111,7 +113,7 @@ def limit_str_size(data):
 
 def update_oled_screen():
 
-    global oled_disp_sh1106
+    global oled_disp_sh1106, prev_weather_check_time, weather_data
 
     with canvas(oled_disp_sh1106) as draw:
         #draw.rectangle(device.bounding_box, outline="white", fill="black")
@@ -123,7 +125,22 @@ def update_oled_screen():
         parsed_cpu_util = limit_str_size(parsed_cpu_util)
         parsed_ram_util = str(get_ram_util_percent())
         parsed_ram_util = limit_str_size(parsed_ram_util)
-        draw.text((10, 30), "CPU: " + parsed_cpu_util + "%   RAM: " + parsed_ram_util + "%", fill="white")
+        draw.text((10, 30), "CPU: " + parsed_cpu_util + "% RAM: " + parsed_ram_util + "%", fill="white")
+
+        if time.time() - prev_weather_check_time > WEATHER_CHECK_DELAY_SEC:
+            try:
+                init_modules()
+                weather_data = get_weather_data()
+            except:
+                pass
+            
+        try:
+            draw.text((10, 40), "TMP: " + weather_data[0] + " CLD: " + weather_data[1], fill="white")
+        except:
+            pass
+
+
+
 
 if __name__ == "__main__":
 
