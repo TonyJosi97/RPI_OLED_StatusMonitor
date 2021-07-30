@@ -21,7 +21,7 @@ luma.oled uses hardware interfaces that require permission to access. After you 
 
 `sudo usermod -a -G spi,gpio,i2c pi`
 
-### PS Util (Was already there)
+### psutil
 
 `pip3 install psutil`
 
