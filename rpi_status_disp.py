@@ -117,7 +117,7 @@ def get_weather_data():
     observation = owm_manager.weather_at_place('Karukachal,IN')
     w = observation.weather
     temptr = w.temperature('celsius')
-    return [str(temptr.get("temp")), str(w.clouds), str(w.detailed_status)]
+    return [str(temptr.get("temp")), str(w.clouds), str(w.detailed_status), str(w.humidity), str(w.rain)]
 
 
 def limit_str_size(data):
@@ -150,7 +150,7 @@ def update_oled_screen():
         if time.time() - prev_weather_check_time > WEATHER_CHECK_DELAY_SEC or got_weather_data == False:
 
             nw_conn_retry_tmp = 0
-            weather_data = ["OWM", "ERR", ":("]
+            weather_data = ["OWM", "ERR", ":(", "_", "_"]
             while nw_conn_retry_tmp < WAIT_FOR_INTERNET_RETRY:
                 nw_conn_retry_tmp += 1
                 try:
@@ -166,7 +166,8 @@ def update_oled_screen():
 
         try:
             draw.text((5, 25), "TMP: " + weather_data[0] + " CLD: " + weather_data[1], fill="white")
-            draw.text((5, 35), "STS: " + weather_data[2], fill="white")
+            draw.text((5, 35), "HMD:" + weather_data[3] + " RN:" + weather_data[4], fill="white")
+            draw.text((5, 45), "STS: " + weather_data[2], fill="white")
         except:
             pass
 
