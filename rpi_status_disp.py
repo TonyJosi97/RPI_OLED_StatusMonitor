@@ -170,7 +170,7 @@ def update_oled_screen():
             prev_weather_check_time = time.time() 
 
         try:
-            draw.text((OLED_LEFT_PADDING, 30), "TMP:" + weather_data[0] + " CLD:" + weather_data[1], fill="white")
+            draw.text((OLED_LEFT_PADDING, 30), "TMP:" + limit_str_size(weather_data[0]) + " CLD:" + weather_data[1], fill="white")
             draw.text((OLED_LEFT_PADDING, 40), "HMD:" + weather_data[3] + " RN:" + weather_data[4], fill="white")
             draw.text((OLED_LEFT_PADDING, 50), "STS:" + weather_data[2], fill="white")
         except:
