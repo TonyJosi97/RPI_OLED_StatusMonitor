@@ -121,10 +121,15 @@ def get_weather_data():
 
 
 def limit_str_size(data):
-    if len(data) > 5:
-        return data[:5]
+    if len(data) > 4:
+        return data[:4]
     else:
         return data
+
+def get_current_cpu_freq():
+    data_ = str(float(psutil.cpu_freq().current) / 1000)
+    return data_[:3]
+
 
 def update_oled_screen():
 
@@ -132,15 +137,15 @@ def update_oled_screen():
 
     with canvas(oled_disp_sh1106) as draw:
         #draw.rectangle(device.bounding_box, outline="white", fill="black")
-        draw.text((5, 5), "TONY'S RPI 4", fill="white")
+        #draw.text((5, 5), "TONY'S RPI 4", fill="white")
         parsed_temp = str(get_temp())
         parsed_temp = parsed_temp[:5]
-        draw.text((5, 15), "CPU TEMP: " + parsed_temp + " *C", fill="white")
+        draw.text((5, 5), "CTMP:" + parsed_temp + " FRQ:" + get_current_cpu_freq() + "G", fill="white")
         parsed_cpu_util = str(get_cpu_util_percent())
         parsed_cpu_util = limit_str_size(parsed_cpu_util)
         parsed_ram_util = str(get_ram_util_percent())
         parsed_ram_util = limit_str_size(parsed_ram_util)
-        draw.text((5, 25), "CPU:" + parsed_cpu_util + "% RAM:" + parsed_ram_util + "%", fill="white")
+        draw.text((5, 15), "CPU:" + parsed_cpu_util + "% RAM:" + parsed_ram_util + "%", fill="white")
 
         if time.time() - prev_weather_check_time > WEATHER_CHECK_DELAY_SEC or got_weather_data == False:
 
@@ -160,8 +165,8 @@ def update_oled_screen():
             prev_weather_check_time = time.time() 
 
         try:
-            draw.text((5, 35), "TMP: " + weather_data[0] + " CLD: " + weather_data[1], fill="white")
-            draw.text((5, 45), "STS: " + weather_data[2], fill="white")
+            draw.text((5, 25), "TMP: " + weather_data[0] + " CLD: " + weather_data[1], fill="white")
+            draw.text((5, 35), "STS: " + weather_data[2], fill="white")
         except:
             pass
 
