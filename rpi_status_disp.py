@@ -140,14 +140,14 @@ def update_oled_screen():
         #draw.text((5, 5), "TONY'S RPI 4", fill="white")
         parsed_temp = str(get_temp())
         parsed_temp = parsed_temp[:5]
-        draw.text((5, 5), "CTMP:" + parsed_temp + " FRQ:" + get_current_cpu_freq() + "G", fill="white")
+        draw.text((5, 4), "CTMP:" + parsed_temp + " FRQ:" + get_current_cpu_freq() + "G", fill="white")
         parsed_cpu_util = str(get_cpu_util_percent())
         parsed_cpu_util = limit_str_size(parsed_cpu_util)
         parsed_ram_util = str(get_ram_util_percent())
         parsed_ram_util = limit_str_size(parsed_ram_util)
-        draw.text((5, 15), "CPU:" + parsed_cpu_util + "% RAM:" + parsed_ram_util + "%", fill="white")
+        draw.text((5, 14), "CPU:" + parsed_cpu_util + "% RAM:" + parsed_ram_util + "%", fill="white")
 
-        draw.text((5, 21), "-----------------", fill="white")
+        draw.text((5, 22), "-----------------", fill="white")
 
         if time.time() - prev_weather_check_time > WEATHER_CHECK_DELAY_SEC or got_weather_data == False:
 
@@ -167,9 +167,9 @@ def update_oled_screen():
             prev_weather_check_time = time.time() 
 
         try:
-            draw.text((5, 25), "TMP: " + weather_data[0] + " CLD: " + weather_data[1], fill="white")
-            draw.text((5, 35), "HMD:" + weather_data[3] + " RN:" + weather_data[4], fill="white")
-            draw.text((5, 45), "STS: " + weather_data[2], fill="white")
+            draw.text((5, 30), "TMP: " + weather_data[0] + " CLD: " + weather_data[1], fill="white")
+            draw.text((5, 40), "HMD:" + weather_data[3] + " RN:" + weather_data[4], fill="white")
+            draw.text((5, 50), "STS: " + weather_data[2], fill="white")
         except:
             pass
 
