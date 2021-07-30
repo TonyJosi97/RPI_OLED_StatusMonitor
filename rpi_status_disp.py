@@ -147,6 +147,8 @@ def update_oled_screen():
         parsed_ram_util = limit_str_size(parsed_ram_util)
         draw.text((5, 15), "CPU:" + parsed_cpu_util + "% RAM:" + parsed_ram_util + "%", fill="white")
 
+        draw.text((5, 21), "-----------------", fill="white")
+
         if time.time() - prev_weather_check_time > WEATHER_CHECK_DELAY_SEC or got_weather_data == False:
 
             nw_conn_retry_tmp = 0
