@@ -11,10 +11,14 @@ import psutil
 from pyowm import OWM
 from pyowm.utils import config
 from pyowm.utils import timestamps
+import RPi.GPIO as GPIO
 
 AUTH_TOKEN_FILE_PATH = "./owm_api_key.txt"
 WEATHER_CHECK_DELAY_SEC = 3600 # 1 hour delay
 WAIT_FOR_INTERNET_RETRY = 60 # Each retry takes approx 1 sec (1 sec sleep used)
+CPU_FAN_SIGNAL_GPIO = 17
+CPU_FAN_TURN_ON_THRESH = 45
+CPU_FAN_TURN_OFF_THRESH = 41
 
 ## Oled Display alignment
 OLED_LEFT_PADDING = 10
@@ -25,6 +29,7 @@ oled_disp_sh1106 = None
 prev_weather_check_time = 0.0
 weather_data = None
 got_weather_data = False
+g_cur_temp = 0
 
 def get_temp(window = 20, samp_period_ms = 20):
     temp_sum = 0
@@ -100,9 +105,15 @@ def check_network_connection():
         return -1
 
 def init_modules():
+
+    # Init open weather map API
     global owm_manager
     owm = OWM(str(get_owm_authtoken()))
     owm_manager = owm.weather_manager()
+
+    # Init GPIO API
+    GPIO.setmode(GPIO.BCM)                              # choose BCM GPIO address layout 
+    GPIO.setup(CPU_FAN_SIGNAL_GPIO, GPIO.OUT)           # set CPU_FAN_SIGNAL_GPIO as an output 
 
 
 def init_device():
@@ -136,7 +147,7 @@ def get_current_cpu_freq():
 
 def update_oled_screen():
 
-    global oled_disp_sh1106, prev_weather_check_time, weather_data, got_weather_data
+    global oled_disp_sh1106, prev_weather_check_time, weather_data, got_weather_data, g_cur_temp
 
     with canvas(oled_disp_sh1106) as draw:
         #draw.rectangle(device.bounding_box, outline="white", fill="black")
@@ -146,7 +157,8 @@ def update_oled_screen():
         parsed_ram_util = str(get_ram_util_percent())
         parsed_ram_util = limit_str_size(parsed_ram_util)
         draw.text((OLED_LEFT_PADDING, 4), "CPU:" + parsed_cpu_util + "% RAM:" + parsed_ram_util + "%", fill="white")
-        parsed_temp = str(get_temp())
+        g_cur_temp = get_temp()
+        parsed_temp = str(g_cur_temp)
         parsed_temp = limit_str_size(parsed_temp)
         draw.text((OLED_LEFT_PADDING, 14), "TMP:" + parsed_temp + " FRQ:" + get_current_cpu_freq() + "G", fill="white")
 
@@ -176,6 +188,17 @@ def update_oled_screen():
         except:
             pass
 
+def cpu_fan_control():
+    
+    global g_cur_temp
+    try:
+        if g_cur_temp >= CPU_FAN_TURN_ON_THRESH:
+            GPIO.output(CPU_FAN_SIGNAL_GPIO, True)
+        elif g_cur_temp <= CPU_FAN_TURN_OFF_THRESH:
+            GPIO.output(CPU_FAN_SIGNAL_GPIO, False)
+    except KeyboardInterrupt:
+        GPIO.cleanup()
+
 if __name__ == "__main__":
 
     # Wait for internet to be up and running, (wait for max approx. 60 secs)
@@ -196,4 +219,5 @@ if __name__ == "__main__":
 
     while True:
         update_oled_screen()
+        cpu_fan_control()
         time.sleep(1 - 0.4) ## Update every 1 sec, CPU temp calc function takes aprox 400 ms
