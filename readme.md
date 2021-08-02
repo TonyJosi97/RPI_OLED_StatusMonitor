@@ -32,3 +32,6 @@ luma.oled uses hardware interfaces that require permission to access. After you 
 
 `pip3 install pyowm`
 
+
+## Setup
+
