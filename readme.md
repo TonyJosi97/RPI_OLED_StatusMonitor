@@ -1,6 +1,6 @@
 ## RPI_OLED_StatusMonitor
 
-RPI_OLED_StatusMonitor is a python script to update the [OLED Display Module - SH1106](https://robu.in/product/0-96-inch-i2c-iic-oled-lcd-module-4pin-with-vcc-gnd-white/) with Raspberry Pi 4 system status such as CPU & RAM utilisation, CPU Frequency, CPU Temperature and also the current weather. The OLED Display Module is connected to the I2C interface of the Raspberry Pi and uses Luma.OLED driver for the communication. 
+RPI_OLED_StatusMonitor is a python script to update the [OLED Display Module - SH1106](https://robu.in/product/0-96-inch-i2c-iic-oled-lcd-module-4pin-with-vcc-gnd-white/) with Raspberry Pi 4 system status such as CPU & RAM utilisation, CPU Frequency, CPU Temperature and also the current weather. The script also controls a 5V cooling fan connected to the Pi based on the tempertature. The fan is connected to the collector of 2N2222 NPN transistor and the Pis 5V pin, the emitter is connected to the ground pin of Pi. The GPIO 17 is connected to the base of the transistor via a 1K resistor so as to switch the transistor ON and OFF to finally turn the fan ON and OFF. The OLED Display Module is connected to the I2C interface of the Raspberry Pi and uses Luma.OLED driver for the communication. 
 
 ### System status information sources:
 1. CPU & RAM utilisation, CPU Frequency - [psutil](https://pypi.org/project/psutil/)
