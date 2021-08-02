@@ -17,8 +17,8 @@ AUTH_TOKEN_FILE_PATH = "./owm_api_key.txt"
 WEATHER_CHECK_DELAY_SEC = 3600 # 1 hour delay
 WAIT_FOR_INTERNET_RETRY = 60 # Each retry takes approx 1 sec (1 sec sleep used)
 CPU_FAN_SIGNAL_GPIO = 17
-CPU_FAN_TURN_ON_THRESH = 45
-CPU_FAN_TURN_OFF_THRESH = 41
+CPU_FAN_TURN_ON_THRESH = 56
+CPU_FAN_TURN_OFF_THRESH = 40
 
 ## Oled Display alignment
 OLED_LEFT_PADDING = 10
