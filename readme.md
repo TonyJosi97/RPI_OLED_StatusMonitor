@@ -35,3 +35,4 @@ luma.oled uses hardware interfaces that require permission to access. After you 
 
 ## Setup
 
+![3](https://github.com/TonyJosi97/RPI_OLED_StatusMonitor/blob/master/res/setup.png)
